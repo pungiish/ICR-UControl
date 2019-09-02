@@ -20,37 +20,54 @@ namespace WpfControlLibrary1
     /// </summary>
     public partial class UserControl1 : UserControl
     {
-		TreeViewItem tviI = new TreeViewItem() { Header = "Hiter Projekt", HorizontalContentAlignment = System.Windows.HorizontalAlignment.Stretch };
-		TreeViewItem tviIA = new TreeViewItem() { Header = "Main.cs", HorizontalContentAlignment = System.Windows.HorizontalAlignment.Stretch };
-		TreeViewItem tviIB = new TreeViewItem() { Header = "Main.cpp", HorizontalContentAlignment = System.Windows.HorizontalAlignment.Stretch };
-		public UserControl1()
+        public static readonly DependencyProperty GetMyValueProperty =
+          DependencyProperty.Register("GetMyValue", typeof(string),
+          typeof(UserControl1), new UIPropertyMetadata(string.Empty));
+
+        public string GetMyValue
+        {
+            get { return (string)GetValue(GetMyValueProperty); }
+            set { SetValue(GetMyValueProperty, value); }
+        }
+        public UserControl1()
         {
             InitializeComponent();
         }
+      
+        public static readonly DependencyProperty SetTextProperty =
+       DependencyProperty.Register("SetText", typeof(string), typeof(UserControl1), new
+          PropertyMetadata("", new PropertyChangedCallback(OnSetTextChanged)));
 
-		public ItemCollection UserControlStrukturaProjekta
-		{
-			get { return strukturaProjekta.Items; }
-			set { strukturaProjekta.ItemsSource = value; }
-		}
-		public string setText
-		{
-			set
-			{
-				txtEditor.Document.Blocks.Clear();
-				txtEditor.AppendText(value);
-			}
-		}
+        public string SetText
+        {
+            get { return (string)GetValue(SetTextProperty); }
+            set { SetValue(SetTextProperty, value); }
+        }
 
-		public void UstvariProjekt()
+        private static void OnSetTextChanged(DependencyObject d,
+           DependencyPropertyChangedEventArgs e)
+        {
+            UserControl1 UserControl1Control = d as UserControl1;
+            UserControl1Control.OnSetTextChanged(e);
+        }
+
+        private void OnSetTextChanged(DependencyPropertyChangedEventArgs e)
+        {
+            txtEditor.AppendText(e.NewValue.ToString());
+        }
+
+
+        public TreeView UserControlStrukturaProjekta
 		{
-			strukturaProjekta.Items.Add(tviI);
-			strukturaProjekta.Items.Add(tviIA);
-			strukturaProjekta.Items.Add(tviIB);
+			get { return strukturaProjekta; }
+			set { strukturaProjekta = value; }
 		}
+     
+		public event EventHandler OnMethodSelect;
 
 		private void listView_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
+
 			var item = (sender as ListView).SelectedItem;
 			if (item != null)
 			{
@@ -85,11 +102,13 @@ namespace WpfControlLibrary1
 				{
 					txtEditor.AppendText($"public Settings() {{\n}}");
 				}
+				OnMethodSelect?.Invoke(this, e);
 			}
 		}
-
+		public event EventHandler OnFileSelect;
 		private void strukturaProjekta_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
+			OnFileSelect?.Invoke(this, e);
 			listView.Items.Clear();
 			txtEditor.Document.Blocks.Clear();
 			var item = (e.NewValue as TreeViewItem);
