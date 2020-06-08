@@ -29,7 +29,6 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <WrapPanel>
-                        
                         <TextBlock Text="ID: " />
                         <TextBlock Text="{Binding Id}" FontWeight="Bold" />
                         <TextBlock Text=", "/>
