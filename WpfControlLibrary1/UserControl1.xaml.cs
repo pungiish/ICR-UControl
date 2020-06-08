@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -20,10 +21,10 @@ namespace WpfControlLibrary1
     /// </summary>
     public partial class UserControl1 : UserControl
     {
+        Storyboard storyboard = new Storyboard();
         public static readonly DependencyProperty GetMyValueProperty =
           DependencyProperty.Register("GetMyValue", typeof(string),
           typeof(UserControl1), new UIPropertyMetadata(string.Empty));
-
         public string GetMyValue
         {
             get { return (string)GetValue(GetMyValueProperty); }
@@ -32,6 +33,12 @@ namespace WpfControlLibrary1
         public UserControl1()
         {
             InitializeComponent();
+            DoubleAnimation da = new DoubleAnimation();
+            da.From = 0;
+            da.To = 150;
+            da.Duration = new Duration(TimeSpan.FromSeconds(2));
+            strukturaProjekta.BeginAnimation(TreeView.WidthProperty, da);
+            listView.BeginAnimation(ListView.WidthProperty, da);
         }
       
         public static readonly DependencyProperty SetTextProperty =
@@ -58,17 +65,22 @@ namespace WpfControlLibrary1
 
 
         public TreeView UserControlStrukturaProjekta
-		{
-			get { return strukturaProjekta; }
-			set { strukturaProjekta = value; }
-		}
-     
-		public event EventHandler OnMethodSelect;
+        {
+            get { return strukturaProjekta; }
+            set { strukturaProjekta = value; }
+        }
+        public RichTextBox richText
+        {
+            get { return txtEditor; }
+            set { richText = value; }
+        }
+
+        public event EventHandler OnMethodSelect;
 
 		private void listView_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-
-			var item = (sender as ListView).SelectedItem;
+            
+            var item = (sender as ListView).SelectedItem;
 			if (item != null)
 			{
 				txtEditor.Document.Blocks.Clear();
@@ -103,15 +115,21 @@ namespace WpfControlLibrary1
 					txtEditor.AppendText($"public Settings() {{\n}}");
 				}
 				OnMethodSelect?.Invoke(this, e);
-			}
+                DoubleAnimation da = new DoubleAnimation();
+                da.From = 0;
+                da.To = 500;
+                da.Duration = new Duration(TimeSpan.FromSeconds(2));
+                strukturaProjekta.BeginAnimation(TreeView.WidthProperty, da);
+            }
 		}
 		public event EventHandler OnFileSelect;
-		private void strukturaProjekta_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+
+		private void strukturaProjekta_SelectedItemChange(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
-			OnFileSelect?.Invoke(this, e);
-			listView.Items.Clear();
-			txtEditor.Document.Blocks.Clear();
 			var item = (e.NewValue as TreeViewItem);
+			OnFileSelect?.Invoke(this, e);
+		    //listView.Items.Clear();
+			//txtEditor.Document.Blocks.Clear();
 			if (item == null)
 			{
 
@@ -150,8 +168,37 @@ namespace WpfControlLibrary1
 			}
 		}
 
-	}
-	public class MyItem
+        private void txtEditor_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            InputBox.Visibility = System.Windows.Visibility.Visible;
+
+
+
+        }
+        private void YesButton_Click(object sender, RoutedEventArgs e)
+        {
+            InputBox.Visibility = System.Windows.Visibility.Collapsed;
+            MyItem selected = (MyItem)this.listView.SelectedItem;
+            String input = InputTextBox.Text;
+            this.listView.Items.Remove(this.listView.SelectedItem);
+            this.listView.Items.Add(new MyItem { Id = selected.Id, Metoda = input });
+
+            InputTextBox.Text = String.Empty;
+        }
+
+        private void NoButton_Click(object sender, RoutedEventArgs e)
+        {
+            InputBox.Visibility = System.Windows.Visibility.Collapsed;
+
+            InputTextBox.Text = String.Empty;
+        }
+    }
+    public class MyItem
 	{
 		public int Id { get; set; }
 

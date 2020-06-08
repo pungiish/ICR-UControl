@@ -6,29 +6,58 @@
              xmlns:local="clr-namespace:WpfControlLibrary1"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <Grid>
-		<DockPanel>
-			<TreeView  Name="strukturaProjekta" DockPanel.Dock="Left" SelectedItemChanged="strukturaProjekta_SelectedItemChanged">
-		</TreeView>
-		<ListView Margin="10" x:Name="listView" DockPanel.Dock="Right" PreviewMouseLeftButtonUp="listView_PreviewMouseLeftButtonUp">
-			<ListView.ItemTemplate>
-				<DataTemplate>
-					<WrapPanel>
-						<TextBlock Text="ID: " />
-						<TextBlock Text="{Binding Id}" FontWeight="Bold" />
-						<TextBlock Text=", "/>
-						<TextBlock Text="Metoda: " />
-						<TextBlock Text="{Binding Metoda}" FontWeight="Bold" />
-					</WrapPanel>
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
-		<StatusBar DockPanel.Dock="Bottom">
-			<StatusBarItem>
-				<TextBlock Name="lblCursorPosition" />
-			</StatusBarItem>
-		</StatusBar>
-		<RichTextBox AcceptsReturn="True" AcceptsTab="True" Name="txtEditor" />
-		</DockPanel>
-	</Grid>
+    
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="150" />
+        </Grid.ColumnDefinitions>
+        <TreeView Grid.Column="0" Name="strukturaProjekta" DockPanel.Dock="Left"   SelectedItemChanged="strukturaProjekta_SelectedItemChange"/>
+        <GridSplitter Width="5" Grid.Column="1" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" ></GridSplitter>
+        <RichTextBox AcceptsReturn="True" AcceptsTab="True" Name="txtEditor" Grid.Column="2"/>
+        <GridSplitter Width="5" Grid.Column="3" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" ></GridSplitter>
+        <ListView Margin="10" x:Name="listView" DockPanel.Dock="Right" PreviewMouseLeftButtonUp="listView_PreviewMouseLeftButtonUp" Grid.Column="4">
+            <ListView.ContextMenu>
+                <ContextMenu FontFamily="Verdana" FontSize="14">
+                    <MenuItem Header="Edit" FontFamily="Verdana" FontSize="14" Click="MenuItem_Click"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <WrapPanel>
+                        
+                        <TextBlock Text="ID: " />
+                        <TextBlock Text="{Binding Id}" FontWeight="Bold" />
+                        <TextBlock Text=", "/>
+                        <TextBlock Text="Metoda: " />
+                        <TextBlock Text="{Binding Metoda}" FontWeight="Bold" />
+                    </WrapPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Grid x:Name="InputBox" Visibility="Collapsed">
+            <Grid Background="Black" Opacity="0.5"/>
+            <Border
+            MinWidth="250"
+            Background="Orange" 
+            BorderBrush="Black" 
+            BorderThickness="1" 
+            CornerRadius="0,55,0,55" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Margin="5" Text="Change name:" FontWeight="Bold" FontFamily="Cambria" />
+                    <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="InputTextBox"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="YesButton" Margin="5" Content="Yes" Background="{x:Null}" Click="YesButton_Click"/>
+                        <Button x:Name="NoButton" Margin="5" Content="No" Background="{x:Null}" Click="NoButton_Click" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
 </UserControl>
